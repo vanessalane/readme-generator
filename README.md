@@ -21,3 +21,6 @@ THEN this is added to the section of the README entitled Questions, with a link 
 THEN this is added to the section of the README entitled Questions, with instructions on how to reach me with additional questions
 - WHEN I click on the links in the Table of Contents
 THEN I am taken to the corresponding section of the README
+
+## Screen Recording
+![Screen Recording](https://github.com/vanessalane/readme-generator/blob/master/readme_generator_demo.gif)
