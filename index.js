@@ -4,6 +4,35 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const generateMarkdown = require('./utils/generateMarkdown.js');
 
+// define the prompts with type: input
+const inputPrompts = [
+    'title',
+    'description',
+    'installation_instructions',
+    'usage_information',
+    'contribution_guidelines',
+    'testing_information',
+    'github_username',
+    'email'
+]
+
+// create the questions of type: input
+const questions = inputPrompts.map( field => {
+    return {
+        type: 'input',
+        name: field,
+        message: `${field.split("_").join(" ")}:`,
+        validate: input => {
+            if (input) {
+                return true;
+            } else {
+                console.log(`${field} is required! `);
+                return false;
+            }
+        }
+    }
+});
+
 // function to write README file
 function writeToFile(fileName, data) {
     return new Promise((resolve, reject) => {
@@ -31,7 +60,7 @@ function init() {
                 // create a question that prompts for the licenses
                 const licensePrompt = {
                     type: 'list',
-                    name: 'field',
+                    name: 'license',
                     message: `license:`,
                     choices: licenseData.map( license => license.name )
                 }
@@ -47,8 +76,20 @@ function init() {
                 `);
                 return inquirer.prompt(questions)
                     .then(responses => {
-                        const projectName = `${responses.title}_README.md`;
-                        return writeToFile(projectName, responses).then(writeFileResponse => {
+                        // get the license key and add it to the response data
+                        for (let i=0; i < licenseData.length; i++) {
+                            if (responses.license === licenseData[i].name) {
+                                let licenseKey = licenseData[i].key;
+                                licenseKey = licenseKey.split("-")[0];  // shields.io only needs the first part of the key to display the badge
+                                responses.license_key = licenseKey;
+                                responses.license_url = licenseData[i].url;
+                                break;
+                            }
+                        }
+                        // write the file
+                        const projectName = responses.title.split(" ").join("_").toLowerCase();
+                        const fileName = `${projectName}_README.md`;
+                        return writeToFile(fileName, responses).then(writeFileResponse => {
                                 console.log(writeFileResponse.message);
                             })
                             .catch(err => {
