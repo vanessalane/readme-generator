@@ -1,9 +1,10 @@
 const inquirer = require("inquirer");
 const fetch = require("node-fetch");
 const fs = require("fs");
+const generateMarkdown = require('./utils/generateMarkdown.js');
 
-// define the project prompts with type: input
-const inputProjectPrompts = [
+// define the prompts with type: input
+const inputPrompts = [
     'title',
     'description',
     'installation_instructions',
@@ -14,7 +15,8 @@ const inputProjectPrompts = [
     'email'
 ]
 
-const questions = inputProjectPrompts.map( field => {
+// create the questions of type: input
+const questions = inputPrompts.map( field => {
     return {
         type: 'input',
         name: field,
@@ -32,7 +34,19 @@ const questions = inputProjectPrompts.map( field => {
 
 // function to write README file
 function writeToFile(fileName, data) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(fileName, generateMarkdown(data), err => {
+            if (err) {
+                reject(err);
+                return;
+            };
 
+            resolve({
+                ok: true,
+                message: `Successfully created your README, ${fileName}!`
+            });
+        });
+    });
 }
 
 // function to initialize program
@@ -41,13 +55,13 @@ function init() {
     fetch("https://api.github.com/licenses")
     .then(function(response) {
         if (response.ok) {
-            response.json().then( function(data) {
+            response.json().then(function(licenseData) {
                 // create a question that prompts for the licenses
                 const licensePrompt = {
                     type: 'list',
-                    name: 'field',
+                    name: 'license',
                     message: `license:`,
-                    choices: data.map( license => license.name )
+                    choices: licenseData.map( license => license.name )
                 }
 
                 // add it to the questions array
@@ -59,12 +73,27 @@ function init() {
                      Provide details for a new README
                     ==================================
                 `);
-                return inquirer.prompt(questions).then(
-                                        
-                    data => {
-                    const projectName = `${data['project title']}_README.md`;
-                    writeToFile(projectName, data);
-                });
+                return inquirer.prompt(questions)
+                    .then(responses => {
+                        // get the license key and add it to the response data
+                        for (let i=0; i < licenseData.length; i++) {
+                            if (responses.license === licenseData[i].name) {
+                                let licenseBadgeMsg = licenseData[i].spdx_id;
+                                licenseBadgeMsg = licenseBadgeMsg.split("-")[0];  // shields.io only needs the first part of the key to display the badge
+                                responses.license_badge = licenseBadgeMsg;
+                                break;
+                            }
+                        }
+                        // write the file
+                        const projectName = responses.title.split(" ").join("_").toLowerCase();
+                        const fileName = `${projectName}_README.md`;
+                        return writeToFile(fileName, responses).then(writeFileResponse => {
+                                console.log(writeFileResponse.message);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
+                    });
             })
         } else {
             console.log(`Licenses could not be loaded: ${err}`);
