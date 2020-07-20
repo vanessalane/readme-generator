@@ -79,9 +79,9 @@ function init() {
                         // get the license key and add it to the response data
                         for (let i=0; i < licenseData.length; i++) {
                             if (responses.license === licenseData[i].name) {
-                                let licenseKey = licenseData[i].key;
-                                licenseKey = licenseKey.split("-")[0];  // shields.io only needs the first part of the key to display the badge
-                                responses.license_key = licenseKey;
+                                let licenseBadgeMsg = licenseData[i].spdx_id;
+                                licenseBadgeMsg = licenseBadgeMsg.split("-")[0];  // shields.io only needs the first part of the key to display the badge
+                                responses.license_badge = licenseBadgeMsg;
                                 break;
                             }
                         }
