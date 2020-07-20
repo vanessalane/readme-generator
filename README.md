@@ -22,5 +22,7 @@ THEN this is added to the section of the README entitled Questions, with instruc
 - WHEN I click on the links in the Table of Contents
 THEN I am taken to the corresponding section of the README
 
-## Screen Recording
-![Screen Recording](https://github.com/vanessalane/readme-generator/blob/master/readme_generator_demo.gif)
+## Screen Recordings
+![Screen Recording of command line](https://github.com/vanessalane/readme-generator/blob/master/readme_generator_demo.gif)
+![Screen Recording of README output](https://github.com/vanessalane/readme-generator/blob/master/readme_link_demo.gif)
+
