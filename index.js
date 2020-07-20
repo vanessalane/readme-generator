@@ -82,7 +82,6 @@ function init() {
                                 let licenseKey = licenseData[i].key;
                                 licenseKey = licenseKey.split("-")[0];  // shields.io only needs the first part of the key to display the badge
                                 responses.license_key = licenseKey;
-                                responses.license_url = licenseData[i].url;
                                 break;
                             }
                         }
