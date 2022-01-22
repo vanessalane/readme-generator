@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "inquirer": "^6.5.2",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^3.1.1"
   },
   "repository": {
     "type": "git",
